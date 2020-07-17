@@ -1,17 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using LifeList.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LifeList.Controllers
 {
-    public class Birders : Controller
+    public class BirdersController : Controller
     {
+        private readonly ApplicationDbContext _context;
+        
+        public BirdersController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
         // GET: Birders
         public ActionResult Index()
         {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var birderProfile = _context.Birder.Where(b => b.IdentityUserId == userId).ToList();
+
+            if (birderProfile.Count == 0)
+            {
+                return RedirectToAction("Create", "Birders");
+            }
+
             return View();
         }
 
