@@ -21,7 +21,7 @@ namespace LifeList.Controllers
         {
             _context = context;
         }
-        // GET: Birders
+
         public ActionResult Index()
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -35,7 +35,6 @@ namespace LifeList.Controllers
             return View();
         }
 
-        // GET: Birders/Details/5
         public ActionResult Details(int id)
         {
 
@@ -43,13 +42,11 @@ namespace LifeList.Controllers
             return View(birder);
         }
 
-        // GET: Birders/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Birders/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Birder birder)
@@ -68,14 +65,12 @@ namespace LifeList.Controllers
             
         }
 
-        // GET: Birders/Edit/5
         public ActionResult Edit(int id)
         {
             var birder = _context.Birder.Where(b => b.BirderId == id).SingleOrDefault();
             return View(birder);
         }
 
-        // POST: Birders/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Birder birder)
