@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using LifeList.Data;
+using LifeList.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace LifeList.Controllers
 {
@@ -34,7 +38,9 @@ namespace LifeList.Controllers
         // GET: Birders/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+
+            var birder = _context.Birder.Where(b => b.BirderId == id).SingleOrDefault();
+            return View(birder);
         }
 
         // GET: Birders/Create
@@ -46,58 +52,70 @@ namespace LifeList.Controllers
         // POST: Birders/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> Create(Birder birder)
         {
-            try
+            if (ModelState.IsValid)
             {
+                var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                birder.IdentityUserId = userId;
+                _context.Add(birder);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+
+            ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", birder.IdentityUserId);
+            return View(birder);
+            
         }
 
         // GET: Birders/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            var birder = _context.Birder.Where(b => b.BirderId == id).SingleOrDefault();
+            return View(birder);
         }
 
         // POST: Birders/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> Edit(int id, Birder birder)
         {
-            try
+            if (id != birder.BirderId)
             {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(birder);
+                    await _context.SaveChangesAsync();
+                   
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!BirderExists(birder.BirderId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                    
+                }
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+            return View(birder);
+
         }
 
-        // GET: Birders/Delete/5
-        public ActionResult Delete(int id)
+        private bool BirderExists(int birderId)
         {
-            return View();
+            return _context.Birder.Any(b => b.BirderId == birderId);
+           
         }
-
-        // POST: Birders/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+       
     }
 }
