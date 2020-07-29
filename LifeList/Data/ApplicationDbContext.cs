@@ -29,6 +29,7 @@ namespace LifeList.Data
         }
 
         public DbSet<Birder> Birder { get; set; }
+        public DbSet<Bird> Bird { get; set; }
 
     }
 }
