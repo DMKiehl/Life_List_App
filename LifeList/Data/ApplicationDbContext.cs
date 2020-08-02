@@ -24,6 +24,12 @@ namespace LifeList.Data
             {
                 Name = "Birder",
                 NormalizedName = "Birder"
+            },
+
+            new IdentityRole
+            {
+                Name ="Admin",
+                NormalizedName = "ADMIN"
             }
             );
         }
