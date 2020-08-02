@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LifeList.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,10 +10,12 @@ namespace LifeList.Controllers
 {
     public class BirdsController : Controller
     {
-        // GET: BirdsController
-        public ActionResult Index()
+
+        private readonly ApplicationDbContext _context;
+
+        public BirdsController(ApplicationDbContext context)
         {
-            return View();
+            _context = context;
         }
 
         // GET: BirdsController/Details/5
